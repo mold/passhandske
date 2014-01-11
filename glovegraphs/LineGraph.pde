@@ -10,6 +10,7 @@ class LineGraph {
   color cFill = color(255);
   color cStroke = color(0);
   color cLine = color(255, 0, 0);
+  color cText = color(40, 40, 40);
   boolean first = true;
 
   LineGraph(float x, float y, int min_val, int max_val, int steps) {
@@ -73,6 +74,11 @@ class LineGraph {
       stroke(cLine);
       line(x+i*xSize, y+h-(values[i]-min)*ySize, x+(i+1)*xSize, y+h-(values[i+1]-min)*ySize);
     }
+    
+    // Draw text
+    fill(cText);
+    textSize(20);
+    text(values[position], 10, 10);
   }
 
   void addValue(float value) {
