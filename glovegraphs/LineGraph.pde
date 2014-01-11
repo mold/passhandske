@@ -49,6 +49,11 @@ class LineGraph {
       stroke(cLine);
       line(x+i*xSize, y+h-(values[i]-min)*ySize, x+(i+1)*xSize, y+h-(values[i+1]-min)*ySize);
     }
+    
+      // Draw text
+    fill(0, 0, 0);
+    textSize(20);
+    text(values[position%values.length]+"", x+5, y+20);
   }
 
   void displayOverDraw() {
@@ -75,10 +80,6 @@ class LineGraph {
       line(x+i*xSize, y+h-(values[i]-min)*ySize, x+(i+1)*xSize, y+h-(values[i+1]-min)*ySize);
     }
     
-    // Draw text
-    fill(cText);
-    textSize(20);
-    text(values[position], 10, 10);
   }
 
   void addValue(float value) {

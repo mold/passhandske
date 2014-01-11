@@ -1,6 +1,6 @@
 import processing.serial.*;
 
-int NUMBER_OF_SENSORS = 1;
+int NUMBER_OF_SENSORS = 2;
 int BYTES_PER_SENSOR = 2;
 GraphContainer graphC = new GraphContainer(10, // x position
 10, // y position
@@ -13,8 +13,8 @@ int KEY_ACTIVATE = 32;
 boolean userInput = false;
 boolean savingInput = false;
 
-int SAMPLES_PER_SECOND = 50;
-float[][] inputBuffer = new float[NUMBER_OF_SENSORS][SAMPLES_PER_SECOND*10]; // 10 seconds
+int SAMPLES_PER_SECOND = 20;
+float[][] inputBuffer = new float[NUMBER_OF_SENSORS][SAMPLES_PER_SECOND*100]; // 10 seconds
 int inputBufferIndex = 0;  // Index for saving data to buffer
 
 // Add variables related to Serial here
@@ -30,38 +30,65 @@ void setup() {
 
 void draw() {
   // check for input
-  while (serial.available () > NUMBER_OF_SENSORS*BYTES_PER_SENSOR+1) {
-    byte[] bytes;   
-    float[] newData = new float[NUMBER_OF_SENSORS];
+  if (userInput) {
+    // User input is happening
+    savingInput = true;
+    while (serial.available () > NUMBER_OF_SENSORS*BYTES_PER_SENSOR+1
+          && inputBufferIndex < inputBuffer[0].length    ) {
+      byte[] bytes;   
+      float[] newData = new float[NUMBER_OF_SENSORS];
 
-    try {
-      bytes = serial.readBytesUntil((byte)10);
+      try {
+        bytes = serial.readBytesUntil((byte)10);
 
-      for (int i = 0; i < NUMBER_OF_SENSORS; i++) {
-        // read bytes, make into values
-        int value = twoBytesToInt(bytes[i*2+1], bytes[i*2]);
-        newData[i] = (float)value;
+        for (int i = 0; i < NUMBER_OF_SENSORS; i++) { 
+          // read bytes, make into values
+          float value = (float)twoBytesToInt(bytes[i*2+1], bytes[i*2]);
+          newData[i] = value;
+          inputBuffer[i][inputBufferIndex] = value;
+        }
+        inputBufferIndex++;
+        graphC.addValues(newData);
       }
-
-      graphC.addValues(newData);
+      catch(Exception e) {
+        println(e);
+      }
     }
-    catch(Exception e) {
-      println(e);
+  }
+  else {
+    if(savingInput){
+    printInputBuffer();
     }
+    savingInput = false;
+    userInput = false;
   }
 
   graphC.display();
 }
-
+/*
 void keyPressed() {
   userInput = true;
 }
 void keyReleased() {
   userInput = false;
+}*/
+
+void keyTyped(){
+ userInput=!userInput; 
 }
 
 int twoBytesToInt(byte byte1, byte byte2) {
   return (int)(byte1 | byte2 << 8);
+}
+
+void printInputBuffer() {
+  for (int i = 0; i < inputBuffer.length; i++) {
+    print("Sensor "+i+": ");
+    for (int j = 0; j < inputBuffer[0].length; j++) {
+      print(inputBuffer[i][j]+ " ");
+    }
+    println();
+  }
 }
 //ttyACM0
 
