@@ -54,7 +54,7 @@ class LineGraph {
     // Draw text
     fill(0, 0, 0);
     textSize(20);
-    text(values[position%values.length], x+5, y+20);
+    text(values[position == 0 ? 0:position-1], x+5, y+20);
   }
 
   /*
@@ -87,12 +87,13 @@ class LineGraph {
   void addValue(float value) {
     position = position%values.length;
     values[position] = value;
-
-    if (value > max) {
-      max = parseInt(value);
-    }
-    else if (value < min) {
-      min = parseInt(value);
+    if (dynamic) {
+      if (value > max) {
+        max = parseInt(value);
+      }
+      else if (value < min) {
+        min = parseInt(value);
+      }
     }
 
     position++;

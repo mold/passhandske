@@ -57,6 +57,7 @@ void changeState(State s) {
   graphC = newGraphC();
   userInput = false;
   savingInput = false;
+  println("Active state: "+activeState);
 }
 
 void keyTyped() {
@@ -79,7 +80,7 @@ void keyTyped() {
 }
 
 int twoBytesToInt(byte byte1, byte byte2) {
-  return (int)(byte1 | byte2 << 8);
+  return (byte1 & 0xff) | ((byte2 & 0xff) << 8 );
 }
 
 void printInputBuffer() {
@@ -166,12 +167,14 @@ void clearInputBuffer() {
  * Shortcut for getting a new graph container
  */
 GraphContainer newGraphC() {
-  return new GraphContainer(10, // x position
+  GraphContainer x = new GraphContainer(10, // x position
   40, // y position
-  200, // minimum value of input data
-  800, // maximum value of input data
+  300, // minimum value of input data
+  400, // maximum value of input data
   NUMBER_OF_SENSORS, // number of sensors (length of input array)
   700);// width of graph container (pixels)
+  x.setDynamicInterval(true);
+  return x;
 }
 
 /**
@@ -181,7 +184,7 @@ GraphContainer newGraphC() {
  * SPAGHEEEEEETTIIIII
  */
 void readSerial() {
-  while (serial.available () > NUMBER_OF_SENSORS*BYTES_PER_SENSOR+1) {
+  while (serial.available () > NUMBER_OF_SENSORS*BYTES_PER_SENSOR) {
     if (inputBufferIndex >= inputBuffer[0].length) {
       inputBufferIndex = 0;
     }
@@ -191,18 +194,21 @@ void readSerial() {
 
     try {
       bytes = serial.readBytesUntil((byte)10);  // Read until newline
+      int readBytes = (bytes.length-1)/2;
+      if (NUMBER_OF_SENSORS == readBytes) {
+        for (int i = 0; i < NUMBER_OF_SENSORS; i++) {  // Get data for each sensor
 
-      for (int i = 0; i < NUMBER_OF_SENSORS; i++) {  // Get data for each sensor
-        // Convert two bytes to one float
-        float value = (float)twoBytesToInt(bytes[i*2+1], bytes[i*2]);
-        // Save to newData and inputBuffer
-        newData[i] = value;
-        inputBuffer[i][inputBufferIndex] = value;
+            // Convert two bytes to one float
+          float value = (float)twoBytesToInt(bytes[i*2+1], bytes[i*2]);
+          // Save to newData and inputBuffer
+          newData[i] = value;
+          inputBuffer[i][inputBufferIndex] = value;
+        } 
+
+        inputBufferIndex++;
+        // Add new data to display
+        graphC.addValues(newData);
       }
-      inputBufferIndex++;
-
-      // Add new data to display
-      graphC.addValues(newData);
     }
     catch(Exception e) {
       println(e);
