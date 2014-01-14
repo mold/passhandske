@@ -20,9 +20,7 @@ class PasswordManager {
   int x; 
   int y;
 
-  PasswordManager (int x, int y) {
-    this.x=x;
-    this.y=y;
+  PasswordManager () {
   }
 
   float[] normalizeVector (int[] vector) {

@@ -5,6 +5,7 @@ State activeState;
 int NUMBER_OF_SENSORS = 5;
 int BYTES_PER_SENSOR = 2;
 GraphContainer graphC;
+PasswordManager pwm;
 
 int KEY_ACTIVATE = 32;
 boolean userInput = false;
@@ -22,6 +23,11 @@ void setup() {
   activeState = State.SET;
   clearInputBuffer();
   graphC = newGraphC();
+
+  // Set up passwordmanager
+  pwm = new PasswordManager();
+  pwm.x = 10;
+  pwm.y = 40;
 
   // Init serial
   serial = new Serial(this, Serial.list()[0], 9600);
@@ -101,19 +107,23 @@ void setPassword() {
 
   // check for input
   if (userInput) {  // User input is happening
+    if (!savingInput) {
+      // gonna start getting input so clear buffer!!!
+      serial.clear();
+    }
     savingInput = true;  // save new password to buffer
     readSerial();
   }
   else {
     if (savingInput) {  // Done getting new password
-      printInputBuffer();
       savingInput = false;
-      // TODO: Save to password checker librrrarry
+      printInputBuffer();
+
+      pwm.setPassword(inputBuffer);
     }
 
     userInput = false;
   }
-
   graphC.display();
 }
 
@@ -125,6 +135,10 @@ void inputPassword() {
 
   // check for input
   if (userInput) {  // User input is happening
+    if (!savingInput) {
+      // gonna start getting input so clear buffer!!!
+      serial.clear();
+    }
     savingInput = true;  // save new password to buffer
     readSerial();
   }
@@ -132,6 +146,9 @@ void inputPassword() {
     if (savingInput) {  // Done getting new password
       printInputBuffer();
       savingInput = false;
+
+      // yeah yeah maybe bad code should be in verify but hey
+      pwm.verifyPassword(inputBuffer);
       changeState(State.VERIFY);
     }
 
@@ -147,7 +164,8 @@ void inputPassword() {
 void verifyPassword() {
   drawTitle("VERIFYING PASSWORD");
 
-  // Verify password
+  // verifyPassword() was called during INPUT, so just draw it here
+  pwm.display();
 }
 
 /**
@@ -161,6 +179,7 @@ void drawTitle(String text) {
 
 void clearInputBuffer() {
   inputBuffer = new float[NUMBER_OF_SENSORS][SAMPLES_PER_SECOND*100]; // 10 seconds
+  inputBufferIndex = 0;
 }
 
 /**
@@ -184,7 +203,7 @@ GraphContainer newGraphC() {
  * SPAGHEEEEEETTIIIII
  */
 void readSerial() {
-  while (serial.available () > NUMBER_OF_SENSORS*BYTES_PER_SENSOR) {
+  while (serial.available () > NUMBER_OF_SENSORS*BYTES_PER_SENSOR && savingInput) {
     if (inputBufferIndex >= inputBuffer[0].length) {
       inputBufferIndex = 0;
     }
