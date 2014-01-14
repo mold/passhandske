@@ -1,6 +1,7 @@
 class PasswordManager {
 
-  float threshold = 0.3;
+  final float NOISE_THRESHOLD = 0.3;
+  final float ERROR_THRESHOLD = 0.3;
 
   public int x = 0; 
   public int y = 0;
@@ -9,7 +10,6 @@ class PasswordManager {
   
   public float[][] savedPassword;
   public float[][] inputPassword;
-  public float[][] errorVectors;
 
   PasswordManager () {
     
@@ -20,74 +20,112 @@ class PasswordManager {
     float minValue = min(vector);
     float maxValue = max(vector);
     float range = maxValue - minValue;
-    for (int i = 0; i < vector.length; i++) {
-      normalized[i] = (vector[i] - minValue) / range;
+    if (range > 0) {
+      for (int i = 0; i < vector.length; i++) {
+        normalized[i] = (vector[i] - minValue) / range;
+      }
     }
     return normalized;
   }
 
-  float[] cutVector (float[] vector, float threshold) {
-    float[] v = new float[vector.length];
-    //    
-    //    v_start = 1; %in C++ use 0
-    //    v_end= length(vector); %in C++ use length(a)-1
-    //    
-    //    i = v_start;
-    //    cont=true;
-    //    while (cont)
-    //        if (abs(vector(i+1)- vector(i)) < slack)
-    //            i = i + 1;
-    //        else
-    //            cont=false;
-    //            v_start = i + 1;
-    //        end
-    //    
-    //    end
-    //    
-    //    i = v_end;
-    //    cont=true;
-    //    while (cont)
-    //        if (abs(vector(i-1)- vector(i)) < slack)
-    //            i = i - 1;
-    //        else
-    //            cont=false;
-    //            v_end = i - 1;
-    //        end
-    //    
-    //    end
-    //    
-    //    new_vector = vector(v_start:v_end);
-
+  /**
+   * Extracts and returns the specified part of the input vector.
+   */
+  float[] cutVector (float[] vector, int left, int right) {
+    float[] v = new float[right - left + 1];
+    
+    for (int i = 0; i < v.length; i++) {
+      v[i] = vector[left + i];
+    }
+    
     return v;
   }
+  
+  /**
+   * Returns the left and right indices of the input vector
+   * indicating where the end point noise data ends and starts
+   * on the vector.
+   */
+  int[] getNoiseLimits (float[] vector) {
+    int left = 0;
+    int right = vector.length - 1;
+    
+    while (left < right &&
+      abs(vector[left+1] - vector[left]) < NOISE_THRESHOLD)
+      left++;
+    while (left < right &&
+      abs(vector[right-1] - vector[right]) < NOISE_THRESHOLD)
+      right--;
+    
+    return new int[] {left, right};
+  }
+  
+  /**
+   * Trim the password from end point noise.
+   */
+  float[][] trimPassword (int[][] password) {
+    float[][] matrix;
+    int[] limits;
+    int left = password[0].length;
+    int right = 0;
+    
+    // normalize the password and convert to floats
+    matrix = new float[password.length][password[0].length];
+    for (int i = 0; i < matrix.length; i++) {
+      matrix[i] = normalizeVector(password[i]);
+    }
+    
+    // find the limits where the password starts and ends
+    for (int i = 0; i < matrix.length; i++) {
+      limits = getNoiseLimits(matrix[0]);
+      if (limits[0] < left)
+        left = limits[0];
+      if (limits[1] > right)
+        right = limits[1];
+    }
+    
+    // trim all the vectors
+    float[][] trimmed = new float[matrix.length][right - left + 1];
+    for (int i = 0; i < trimmed.length; i++) {
+      trimmed[i] = cutVector(matrix[i], left, right);
+    }
+    return trimmed;
+  }
+  
+  /**
+   * Calculates the squared difference between the vectors v1 and v2.
+   */
+  float compareVectors (float[] v1, float[] v2) {
+    if (v1.length != v2.length)
+      return -1;
+    
+    float error = 0;
+    for (int i = 0; i < v1.length; i++) {
+      error += pow(v1[i] - v2[i], 2);
+    }
+    
+    return sqrt(error) / v1.length;
+  }
 
-/*function [error] = compare_vector(v1, v2)
-
-size = length(v1);
-error=0;
-
-new_v2 = resize_vector(v2,size);
-
-for i = 1 : size
-    error = error + (v1(i)-new_v2(i))^2;
-end
-   
-error=sqrt(error)/size;
-
-end*/
-
+  /**
+   * Returns a new vector of size targetSize with values
+   * from the input vector.
+   */
   float[] resizeVector (float[] vector, int targetSize) {
     float[] newVector = new float[targetSize];
-    float step = (float) vector.length / targetSize;
     int prevIndex = 0;
     int newIndex = 0;
     float average;
+    float step;
+    float dy;
     
     if (vector.length >= targetSize) {
       // compress the vector
+      step = (float) vector.length / targetSize;
       for (int i = 0; i < targetSize; i++) {
         newIndex = ceil(i * step);
         if (newIndex - prevIndex > 0) {
+          // calculate the average value
           average = 0;
           for (int j = prevIndex; j <= newIndex; j++) {
             average += vector[j];
@@ -101,65 +139,53 @@ end*/
       }
     } else {
       // expand the vector
+      step = (float) (vector.length - 1) / targetSize;
       for (int i = 0; i < vector.length - 1; i++) {
-        prevIndex = newIndex;
-        while (floor(newIndex * step) == i) {
+        // get the range which should interpolate between index i and i+1
+        while (floor(newIndex * step) == i)
           newIndex++;
-        }
-        
-        for (int j = prevIndex; j < newIndex; j++) {
-          newVector[j] = vector[i] + (j - prevIndex) * (vector[i+1] - vector[i]) / (newIndex - prevIndex + 1);
-        }
+        newIndex--;
+        // interpolate between index i and i+1
+        dy = (vector[i+1] - vector[i]) / (newIndex - prevIndex);
+        for (int j = prevIndex; j <= newIndex; j++)
+          newVector[j] = vector[i] + (j - prevIndex) * dy;
+        // update the indices
+        prevIndex = newIndex;
+        newIndex++;
       }
     }
     
     return newVector;
   }
-/*
-function [new_vector] = resize_vector(vector, size)
-
-if (length(vector)>size)
-    %compress the vector:
-    new_index=round(linspace(1,length(vector),size));
-    new_vector=zeros(1,size);
-    for i = 1 : size
-    new_vector(i)=vector(new_index(i));
-    end
-else
-    %expand the vector:
-    new_index=round(linspace(1,length(vector),size));
-    new_vector=zeros(1,size);
-    for i = 1 : size
-    new_vector(i)=vector(new_index(i));
-    end
-end
-
-end
-*/
 
   /**
    * save password
    */
   void savePassword(int[][] sensorData) {
-    savedPassword = new float[sensorData.length][sensorData[0].length];
-    
-    for (int i = 0; i < savedPassword.length; i++) {
-      savedPassword[i] = normalizeVector(sensorData[i]);
-    }
+    savedPassword = trimPassword(sensorData);
   }
 
   /**
    * compare specified password with the saved one
    */
-  void verifyPassword(int[][] sensorData) {
-    float[][] error = new float[sensorData.length][sensorData[0].length];
+  boolean verifyPassword(int[][] sensorData) {
+    float[] v;
+    float[] error = new float[savedPassword.length];
+    float averageError = 0;
+    
+    inputPassword = trimPassword(sensorData);
     
     for (int i = 0; i < error.length; i++) {
-      error[i] = normalizeVector(sensorData[i]);
-      
+      v = resizeVector(inputPassword[i], savedPassword[i].length);
+      error[i] = compareVectors(savedPassword[i], v);
+      averageError += error[i];
     }
+    averageError /= error.length;
     
+    println("Error: "+averageError);
+    println(error);
     
+    return averageError < ERROR_THRESHOLD;
   }
 
   /**
@@ -169,19 +195,3 @@ end
   }
 }
 
-
-//a_cut=cut_vector(normalize_vector(a),slack)
-//b_cut=cut_vector(normalize_vector(b),slack)
-//c_cut=cut_vector(normalize_vector(c),slack)
-//d_cut=cut_vector(normalize_vector(d),slack)
-//e_cut=cut_vector(normalize_vector(e),slack)
-//
-//b_resize=resize_vector(b_cut,length(a_cut))
-//c_resize=resize_vector(c_cut,length(a_cut))
-//d_resize=resize_vector(d_cut,length(a_cut))
-//e_resize=resize_vector(e_cut,length(a_cut))
-//
-//error_b = compare_vector(a_cut, b_cut)
-//error_c = compare_vector(a_cut, c_cut)
-//error_d = compare_vector(a_cut, d_cut)
-//error_e = compare_vector(a_cut, e_cut)

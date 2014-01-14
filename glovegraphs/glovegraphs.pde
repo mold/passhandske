@@ -19,7 +19,7 @@ int inputBufferIndex = 0;  // Index for saving data to buffer
 Serial serial;
 
 void setup() {
-  size(1000, 1000);
+  //size(1000, 1000);
   activeState = State.SET;
   clearInputBuffer();
   graphC = newGraphC();
@@ -147,8 +147,6 @@ void inputPassword() {
       printInputBuffer();
       savingInput = false;
 
-      // yeah yeah maybe bad code should be in verify but hey
-      pwm.verifyPassword(inputBuffer);
       changeState(State.VERIFY);
     }
 
@@ -164,7 +162,7 @@ void inputPassword() {
 void verifyPassword() {
   drawTitle("VERIFYING PASSWORD");
 
-  // verifyPassword() was called during INPUT, so just draw it here
+  pwm.verifyPassword(inputBuffer);
   pwm.display();
 }
 
