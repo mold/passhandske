@@ -54,7 +54,7 @@ class LineGraph {
     // Draw text
     fill(0, 0, 0);
     textSize(20);
-    text(values[position%values.length]+"", x+5, y+20);
+    text(values[position%values.length], x+5, y+20);
   }
 
   /*

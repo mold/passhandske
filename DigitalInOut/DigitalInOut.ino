@@ -49,14 +49,14 @@ void loop() {
   //  }
 
   for(int i = 0; i < bNoPins; i++){
-    int value = map(analogRead(bPins[i]), 200, 700, 0, 100);
+    int value = analogRead(bPins[i]);
         //Serial.print(value);
-    sendInt16AsBytes(value);
-
+    //sendInt16AsBytes(value);
+  Serial.println(value);
   }
  // Serial.println();
   // End transmission with a linebreak (sortof)
-  Serial.write(10);
+  //Serial.write(10);
   // wait 
   // for the analog-to-digital converter to settle
   // after the last reading:

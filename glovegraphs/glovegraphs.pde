@@ -24,7 +24,7 @@ void setup() {
   graphC = newGraphC();
 
   // Init serial
-  //serial = new Serial(this, Serial.list()[0], 9600);
+  serial = new Serial(this, Serial.list()[0], 9600);
 }
 
 void draw() {
@@ -60,7 +60,6 @@ void changeState(State s) {
 }
 
 void keyTyped() {
-
   switch(key) {   // Change state maybe?
   case '1':
     changeState(State.SET);
@@ -169,8 +168,8 @@ void clearInputBuffer() {
 GraphContainer newGraphC() {
   return new GraphContainer(10, // x position
   40, // y position
-  0, // minimum value of input data
-  100, // maximum value of input data
+  200, // minimum value of input data
+  800, // maximum value of input data
   NUMBER_OF_SENSORS, // number of sensors (length of input array)
   700);// width of graph container (pixels)
 }
@@ -182,12 +181,11 @@ GraphContainer newGraphC() {
  * SPAGHEEEEEETTIIIII
  */
 void readSerial() {
-  while (serial.available () > NUMBER_OF_SENSORS*BYTES_PER_SENSOR+1
-    && inputBufferIndex < inputBuffer[0].length) {
+  while (serial.available () > NUMBER_OF_SENSORS*BYTES_PER_SENSOR+1) {
     if (inputBufferIndex >= inputBuffer[0].length) {
       inputBufferIndex = 0;
     }
-    byte[] bytes;   
+    byte[] bytes = new byte[1];   
     // Data from one sampling
     float[] newData = new float[NUMBER_OF_SENSORS];
 
@@ -208,6 +206,7 @@ void readSerial() {
     }
     catch(Exception e) {
       println(e);
+      println(bytes);
     }
   }
 }
