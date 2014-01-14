@@ -12,7 +12,8 @@ class GraphContainer {
   float barGraphHPercent = lineGraphHPercent;
   int lineGraphW, lineGraphH, barGraphW, barGraphH;
   int padding = 10;
-  
+  boolean dynamic = false;
+
   BarGraph barGraph;
   LineGraph[] lineGraphs;
   int steps = 700;
@@ -35,14 +36,13 @@ class GraphContainer {
     barGraphH = Math.round((width-padding*2)*barGraphHPercent);
 
     h = (int)Math.ceil(padding*2+numberOfSensors*lineGraphH+(numberOfSensors-1)*padding);
-    
+
     barGraph = new BarGraph(x+padding+lineGraphW+padding, y+padding, min, max, numberOfSensors, barGraphW, barGraphH);
-    
+
     lineGraphs = new LineGraph[numberOfSensors];
-    for(int i = 0; i < numberOfSensors; i++){
-       lineGraphs[i] = new LineGraph(x+padding, y+padding+i*(lineGraphH+padding), min, max, steps, lineGraphW, lineGraphH);
+    for (int i = 0; i < numberOfSensors; i++) {
+      lineGraphs[i] = new LineGraph(x+padding, y+padding+i*(lineGraphH+padding), min, max, steps, lineGraphW, lineGraphH);
     }
-    
   }
 
   void display() {
@@ -50,20 +50,34 @@ class GraphContainer {
     fill(cFill);
     stroke(cStroke);
     rect(x, y, w, h);
-    
+
     // Draw line graphs
-    for(int i = 0; i < numberOfSensors; i++){
-       lineGraphs[i].display(); 
+    for (int i = 0; i < numberOfSensors; i++) {
+      lineGraphs[i].display();
     }
-    
+
     barGraph.display();
   }
-  
-  void addValues(float[] newValues){
-    for(int i = 0; i < numberOfSensors; i++){
-       lineGraphs[i].addValue(newValues[i]); 
+
+  void addValues(float[] newValues) {
+    for (int i = 0; i < numberOfSensors; i++) {
+      lineGraphs[i].addValue(newValues[i]);
     }
     barGraph.addValues(newValues);
   }
-}
+
+  /**
+   * Whether to change the min/max values dynamically
+   */
+  void setDynamicInterval(boolean set) {
+    // TODO: test
+    dynamic = set;
+
+    for (int i = 0; i < numberOfSensors; i++) {
+      lineGraphs[i].setDynamic(set);
+    }
+    barGraph.setDynamic(set);
+  }
+  
+}  
 

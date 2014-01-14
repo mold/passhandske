@@ -10,6 +10,7 @@ class BarGraph {
   color cBackground = color(255);
   color cStroke = color(0);
   color cBar = color(100, 100, 100);
+  boolean dynamic = false;
 
   BarGraph(float x, float y, int min_val, int max_val, int numberOfBars, int width, int height) {
     this.x = x; 
@@ -51,6 +52,20 @@ class BarGraph {
 
   void addValues(float[] barValues) {
     this.barValues = barValues;
+
+    for (int i = 0; i < barValues.length; i++) {
+      float val = barValues[i];
+      if (val > max) {
+        max = parseInt(val);
+      }
+      else if (val < min) {
+        min = parseInt(val);
+      }
+    }
+  }
+
+  void setDynamic(boolean set) {
+    dynamic = set;
   }
 }
 
