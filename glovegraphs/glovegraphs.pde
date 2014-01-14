@@ -12,7 +12,7 @@ boolean userInput = false;
 boolean savingInput = false;
 
 int SAMPLES_PER_SECOND = 20;
-float[][] inputBuffer;
+int[][] inputBuffer;
 int inputBufferIndex = 0;  // Index for saving data to buffer
 
 // Add variables related to Serial here
@@ -119,7 +119,7 @@ void setPassword() {
       savingInput = false;
       printInputBuffer();
 
-      pwm.setPassword(inputBuffer);
+      pwm.savePassword(inputBuffer);
     }
 
     userInput = false;
@@ -178,7 +178,7 @@ void drawTitle(String text) {
 }
 
 void clearInputBuffer() {
-  inputBuffer = new float[NUMBER_OF_SENSORS][SAMPLES_PER_SECOND*100]; // 10 seconds
+  inputBuffer = new int[NUMBER_OF_SENSORS][SAMPLES_PER_SECOND*100]; // 10 seconds
   inputBufferIndex = 0;
 }
 
@@ -209,7 +209,7 @@ void readSerial() {
     }
     byte[] bytes = new byte[1];   
     // Data from one sampling
-    float[] newData = new float[NUMBER_OF_SENSORS];
+    int[] newData = new int[NUMBER_OF_SENSORS];
 
     try {
       bytes = serial.readBytesUntil((byte)10);  // Read until newline
@@ -218,7 +218,7 @@ void readSerial() {
         for (int i = 0; i < NUMBER_OF_SENSORS; i++) {  // Get data for each sensor
 
             // Convert two bytes to one float
-          float value = (float)twoBytesToInt(bytes[i*2+1], bytes[i*2]);
+          int value = twoBytesToInt(bytes[i*2+1], bytes[i*2]);
           // Save to newData and inputBuffer
           newData[i] = value;
           inputBuffer[i][inputBufferIndex] = value;

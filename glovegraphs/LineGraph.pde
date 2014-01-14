@@ -1,11 +1,11 @@
 class LineGraph {
   // Set by constructors
   int w, h;
-  float x, y;
+  int x, y;
   int max, min;
 
   // Private
-  float[] values;
+  int[] values;
   int position = 0;  // What value in values we're currently on/last updated
   color cFill = color(255);
   color cStroke = color(0);
@@ -14,24 +14,24 @@ class LineGraph {
   boolean first = true;
   boolean dynamic = false;
 
-  LineGraph(float x, float y, int min_val, int max_val, int steps) {
+  LineGraph(int x, int y, int min_val, int max_val, int steps) {
     w = 700;
     h = 200;
     max = max_val;
     min = min_val;
     this.x = x;
     this.y = y;
-    values = new float[steps];
+    values = new int[steps];
   }
 
-  LineGraph(float x, float y, int min_val, int max_val, int steps, int width, int height) {
+  LineGraph(int x, int y, int min_val, int max_val, int steps, int width, int height) {
     w = width;
     h = height;
     max = max_val;
     min = min_val;
     this.x = x;
     this.y = y;
-    values = new float[steps];
+    values = new int[steps];
   }
 
   void display() {
@@ -84,15 +84,15 @@ class LineGraph {
    }
    */
 
-  void addValue(float value) {
+  void addValue(int value) {
     position = position%values.length;
     values[position] = value;
     if (dynamic) {
       if (value > max) {
-        max = parseInt(value);
+        max = value;
       }
       else if (value < min) {
-        min = parseInt(value);
+        min = value;
       }
     }
 

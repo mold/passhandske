@@ -6,13 +6,12 @@ class PasswordManager {
   public int y = 0;
   public int width = 400;
   public int height = 200;
-  
+
   public float[][] savedPassword;
   public float[][] inputPassword;
   public float[][] errorVectors;
 
   PasswordManager () {
-    
   }
 
   float[] normalizeVector (int[] vector) {
@@ -61,20 +60,20 @@ class PasswordManager {
     return v;
   }
 
-/*function [error] = compare_vector(v1, v2)
-
-size = length(v1);
-error=0;
-
-new_v2 = resize_vector(v2,size);
-
-for i = 1 : size
-    error = error + (v1(i)-new_v2(i))^2;
-end
+  /*function [error] = compare_vector(v1, v2)
    
-error=sqrt(error)/size;
-
-end*/
+   size = length(v1);
+   error=0;
+   
+   new_v2 = resize_vector(v2,size);
+   
+   for i = 1 : size
+   error = error + (v1(i)-new_v2(i))^2;
+   end
+   
+   error=sqrt(error)/size;
+   
+   end*/
 
   float[] resizeVector (float[] vector, int targetSize) {
     float[] newVector = new float[targetSize];
@@ -82,7 +81,7 @@ end*/
     int prevIndex = 0;
     int newIndex = 0;
     float average;
-    
+
     if (vector.length >= targetSize) {
       // compress the vector
       for (int i = 0; i < targetSize; i++) {
@@ -94,60 +93,62 @@ end*/
           }
           average /= newIndex - prevIndex + 1;
           newVector[i] = average;
-        } else {
+        } 
+        else {
           newVector[i] = vector[i];
         }
         prevIndex = newIndex + 1;
       }
-    } else {
+    } 
+    else {
       // expand the vector
       for (int i = 0; i < vector.length; i++) {
         /*newIndex = prevIndex;
-        while (newIndex == i) {
-          newIndex = ;
-        }
-        if (newIndex - prevIndex > 0) {
-          average = 0;
-          
-          average /= newIndex - prevIndex + 1;
-          newVector[i] = average;
-        } else {
-          newVector[i] = vector[i];
-        }
-        prevIndex = newIndex + 1;
-      }*/
-    }
-    
+         while (newIndex == i) {
+         newIndex = ;
+         }
+         if (newIndex - prevIndex > 0) {
+         average = 0;
+         
+         average /= newIndex - prevIndex + 1;
+         newVector[i] = average;
+         } else {
+         newVector[i] = vector[i];
+         }
+         prevIndex = newIndex + 1;
+         }*/
+      }
+    }      
     return newVector;
   }
-/*
+  /*
 function [new_vector] = resize_vector(vector, size)
-
-if (length(vector)>size)
-    %compress the vector:
-    new_index=round(linspace(1,length(vector),size));
-    new_vector=zeros(1,size);
-    for i = 1 : size
-    new_vector(i)=vector(new_index(i));
-    end
-else
-    %expand the vector:
-    new_index=round(linspace(1,length(vector),size));
-    new_vector=zeros(1,size);
-    for i = 1 : size
-    new_vector(i)=vector(new_index(i));
-    end
-end
-
-end
-*/
+   
+   if (length(vector)>size)
+   %compress the vector:
+   new_index=round(linspace(1,length(vector),size));
+   new_vector=zeros(1,size);
+   for i = 1 : size
+   new_vector(i)=vector(new_index(i));
+   end
+   else
+   %expand the vector:
+   new_index=round(linspace(1,length(vector),size));
+   new_vector=zeros(1,size);
+   for i = 1 : size
+   new_vector(i)=vector(new_index(i));
+   end
+   end
+   
+   end
+   */
 
   /**
    * save password
    */
   void savePassword(int[][] sensorData) {
     savedPassword = new float[sensorData.length][sensorData[0].length];
-    
+
     for (int i = 0; i < savedPassword.length; i++) {
       savedPassword[i] = normalizeVector(sensorData[i]);
     }
@@ -158,13 +159,10 @@ end
    */
   void verifyPassword(int[][] sensorData) {
     float[][] error = new float[sensorData.length][sensorData[0].length];
-    
+
     for (int i = 0; i < error.length; i++) {
       error[i] = normalizeVector(sensorData[i]);
-      
     }
-    
-    
   }
 
   /**
@@ -190,3 +188,4 @@ end
 //error_c = compare_vector(a_cut, c_cut)
 //error_d = compare_vector(a_cut, d_cut)
 //error_e = compare_vector(a_cut, e_cut)
+

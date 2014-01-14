@@ -1,7 +1,7 @@
 class GraphContainer {
   // Set by constructors
   int w, h;
-  float x, y;
+  int x, y;
   int max, min;
   int numberOfSensors;
 
@@ -21,7 +21,7 @@ class GraphContainer {
   color cFill = color(255);
   color cStroke = color(0);
 
-  GraphContainer(float x, float y, int min_val, int max_val, int numberOfSensors, int width) {
+  GraphContainer(int x, int y, int min_val, int max_val, int numberOfSensors, int width) {
     w = width;
 
     max = max_val;
@@ -59,7 +59,7 @@ class GraphContainer {
     barGraph.display();
   }
 
-  void addValues(float[] newValues) {
+  void addValues(int[] newValues) {
     for (int i = 0; i < numberOfSensors; i++) {
       lineGraphs[i].addValue(newValues[i]);
     }

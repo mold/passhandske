@@ -1,18 +1,18 @@
 class BarGraph {
   // Set by constructors
   int w, h;
-  float x, y;
+  int x, y;
   int max, min;
   int numberOfBars;
 
   // Private
-  float[] barValues;
+  int[] barValues;
   color cBackground = color(255);
   color cStroke = color(0);
   color cBar = color(100, 100, 100);
   boolean dynamic = false;
 
-  BarGraph(float x, float y, int min_val, int max_val, int numberOfBars, int width, int height) {
+  BarGraph(int x, int y, int min_val, int max_val, int numberOfBars, int width, int height) {
     this.x = x; 
     this.y = y; 
     min = min_val; 
@@ -20,9 +20,9 @@ class BarGraph {
     w = width; 
     h = height;
     this.numberOfBars = numberOfBars;
-    barValues = new float[numberOfBars];
+    barValues = new int[numberOfBars];
   }
-  BarGraph(float x, float y, int min_val, int max_val, int numberOfBars) {
+  BarGraph(int x, int y, int min_val, int max_val, int numberOfBars) {
     this.x = x; 
     this.y = y; 
     min = min_val; 
@@ -30,7 +30,7 @@ class BarGraph {
     w = 300; 
     h = 200;
     this.numberOfBars = numberOfBars;
-    barValues = new float[numberOfBars];
+    barValues = new int[numberOfBars];
   }
 
   void display() {
@@ -50,11 +50,11 @@ class BarGraph {
     }
   }
 
-  void addValues(float[] barValues) {
+  void addValues(int[] barValues) {
     this.barValues = barValues;
 
     for (int i = 0; i < barValues.length; i++) {
-      float val = barValues[i];
+      int val = barValues[i];
       if (val > max) {
         max = parseInt(val);
       }
