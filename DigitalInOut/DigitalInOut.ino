@@ -13,7 +13,7 @@ const int bPins[] = {
 
 int dNoPins = sizeof(dPins)/sizeof(int);
 int bNoPins = sizeof(bPins)/sizeof(int);
-int SAMPLES_PER_SECOND = 15;
+int SAMPLES_PER_SECOND = 20;
 
 int buttonPin = 12;
 
