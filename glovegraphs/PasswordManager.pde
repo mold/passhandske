@@ -172,15 +172,14 @@ class PasswordManager {
    * compare specified password with the saved one
    */
   boolean verifyPassword(int[][] sensorData) {
-    float[] v;
     errors = new float[savedPassword.length];
     float averageError = 0;
     
     inputPassword = trimPassword(sensorData);
     
     for (int i = 0; i < errors.length; i++) {
-      v = resizeVector(inputPassword[i], savedPassword[i].length);
-      errors[i] = compareVectors(savedPassword[i], v);
+      inputPassword[i] = resizeVector(inputPassword[i], savedPassword[i].length);
+      errors[i] = compareVectors(savedPassword[i], inputPassword[i]);
       averageError += errors[i];
     }
     averageError /= errors.length;
@@ -197,6 +196,8 @@ class PasswordManager {
    * Draws
    */
   void display() {
+    println(savedPassword[0]);
+    println(inputPassword[0]);
     ErrorContainer errorC = new ErrorContainer(
       10, // x position
       40, // y position
@@ -208,4 +209,3 @@ class PasswordManager {
     errorC.display();
   }
 }
-
