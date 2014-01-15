@@ -37,11 +37,15 @@ class ErrorGraph {
     // Draw graph line
     float xSize = (float)w/v1.length;
     float ySize = (float)h/(max-min);
+    float y1;
 
-    for (int i = 0; i < v1.length; i++) {
+    for (int i = 0; i < v1.length - 1; i++) {
       // Draw line from current value to next
       fill(cError);
-      rect(x+i*xSize, y+h-(v1[i]-min)*ySize, x+(i+1)*xSize, y+h-(v2[i]-min)*ySize);
+      y1 = y+h-(v1[i]-min)*ySize;
+      //rect(x+i*xSize, y1, xSize, (y+h-(v2[i]-min)*ySize)-y1);
+      line(x+i*xSize, y+h-(v1[i]-min)*ySize, x+(i+1)*xSize, y+h-(v1[i+1]-min)*ySize);
+      line(x+i*xSize, y+h-(v2[i]-min)*ySize, x+(i+1)*xSize, y+h-(v2[i+1]-min)*ySize);
     }
 
     // Draw text
@@ -51,4 +55,3 @@ class ErrorGraph {
   }
 
 }
-
