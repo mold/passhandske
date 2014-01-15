@@ -49,8 +49,8 @@ void loop() {
   //  }
 
   for(int i = 0; i < bNoPins; i++){
-    //int value = analogRead(bPins[i]);
-    int value = map(analogRead(bPins[i]), 0, 1023, 0, 1000);
+    int value = analogRead(bPins[i]);
+    //int value = map(analogRead(bPins[i]), 0, 1023, 0, 1000);
     //Serial.print(value);
     sendInt16AsBytes(value);
   //Serial.println(value);

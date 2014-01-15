@@ -1,4 +1,5 @@
 import processing.serial.*;
+import java.util.*;
 
 State activeState;
 
@@ -9,20 +10,29 @@ PasswordManager pwm;
 
 int KEY_ACTIVATE = 32;
 boolean userInput = false;
-boolean savingInput = false;
+boolean savingInput = true;
 
 int SAMPLES_PER_SECOND = 20;
 int[][] inputBuffer;
 int inputBufferIndex = 0;  // Index for saving data to buffer
+
+boolean calibrated = false;
+float[] sensorMinVal = new float[NUMBER_OF_SENSORS];
+float[] sensorMaxVal = new float[NUMBER_OF_SENSORS];
 
 // Add variables related to Serial here
 Serial serial;
 
 void setup() {
   size(1000, 1000);
-  activeState = State.SET;
+  activeState = State.CALIBRATE;
   clearInputBuffer();
   graphC = newGraphC();
+
+  for (int i = 0; i < NUMBER_OF_SENSORS; i++) {
+    sensorMinVal[i] = 1000;
+    sensorMaxVal[i] = 0;
+  }
 
   // Set up passwordmanager
   pwm = new PasswordManager();
@@ -35,7 +45,11 @@ void setup() {
 
 void draw() {
   background(color(255, 230, 200));  
+
   switch(activeState) {
+  case CALIBRATE:
+    calibrate();
+    break;
   case SET:
     setPassword();
     break;
@@ -50,7 +64,7 @@ void draw() {
   }
 }
 /*
-void keyPressed() {
+   void keyPressed() {
  userInput = true;
  }
  void keyReleased() {
@@ -80,6 +94,10 @@ void keyTyped() {
   case 32:  // space toggles user input from glove
     userInput=!userInput;
     break;
+  case 'c': // calibrtion done!
+    if (activeState == State.CALIBRATE)
+      calibrated = !calibrated;
+    break; 
   default:
     break;
   }
@@ -117,10 +135,10 @@ void setPassword() {
   else {
     if (savingInput) {  // Done getting new password
       savingInput = false;
-      println("input buffer");
-      printInputBuffer();
+      //println("input buffer");
+      //printInputBuffer();
 
-      pwm.savePassword(inputBuffer);
+      pwm.savePassword(getTrimmedBuffer());
     }
 
     userInput = false;
@@ -145,10 +163,10 @@ void inputPassword() {
   }
   else {
     if (savingInput) {  // Done getting new password
-      printInputBuffer();
+      //printInputBuffer();
       savingInput = false;
 
-      pwm.verifyPassword(inputBuffer);
+      pwm.verifyPassword(getTrimmedBuffer());
 
       changeState(State.VERIFY);
     }
@@ -177,8 +195,25 @@ void drawTitle(String text) {
 }
 
 void clearInputBuffer() {
-  inputBuffer = new int[NUMBER_OF_SENSORS][SAMPLES_PER_SECOND*100]; // 10 seconds
+  inputBuffer = new int[NUMBER_OF_SENSORS][SAMPLES_PER_SECOND*20];
   inputBufferIndex = 0;
+}
+
+/**
+ * trims AND NORMALIZES the buffer
+ */
+float[][] getTrimmedBuffer() {
+  float[][] trimmed = new int[NUMBER_OF_SENSORS][];
+
+  for (int i = 0; i < NUMBER_OF_SENSORS; i++) {
+    trimmed[i] = Arrays.copyOf(inputBuffer[i], inputBufferIndex);
+    if (!calibrated)continue;
+    for (int j = 0; j < trimmed[i].length; j++) {
+      trimmed[i][j] = (trimmed[i][j]-sensorMinVal[i])/(sensorMaxVal[i]-sensorMinVal[i]);
+    }
+  }
+
+  return trimmed;
 }
 
 /**
@@ -215,13 +250,18 @@ void readSerial() {
       int readBytes = (bytes.length-1)/2;
       if (NUMBER_OF_SENSORS == readBytes) {
         for (int i = 0; i < NUMBER_OF_SENSORS; i++) {  // Get data for each sensor
-
-            // Convert two bytes to one float
+          // Convert two bytes to one float
           int value = twoBytesToInt(bytes[i*2+1], bytes[i*2]);
+
+          println(value);
+          if (!calibrated) {
+            sensorMinVal[i] = value < sensorMinVal[i] ? value : sensorMinVal[i];
+            sensorMaxVal[i] = value > sensorMaxVal[i] ? value : sensorMaxVal[i];
+          }
+
           // Save to newData and inputBuffer
           newData[i] = value;
           inputBuffer[i][inputBufferIndex] = value;
-          println(value);
         } 
 
         inputBufferIndex++;
@@ -235,4 +275,36 @@ void readSerial() {
     }
   }
 }
+
+/**
+ * Calibration time, come on
+ */
+void calibrate() {
+  drawTitle("CALIBRATION");
+
+  String s = "Calibrate the gloves by first clenching your fist (with the thumb "+
+    "inside your fingers), then opening your hand as far as possible."+
+    "\n\nWhen you've done this, press 'c' to save your min/max values and then '1' to begin.\n\n";
+  s+="\n\nMin values: ";
+  for (int i = 0; i < NUMBER_OF_SENSORS; i++) {
+    s+=sensorMinVal[i]+" ";
+  }
+
+  s+="\nMax values: ";
+  for (int i = 0; i < NUMBER_OF_SENSORS; i++) {
+    s+=sensorMaxVal[i]+" ";
+  }
+
+  if (calibrated) {
+    fill(color(255, 0, 0));
+  }
+  else {
+    fill(color(0, 0, 0));
+  }
+
+  text(s, 10, 80, 500, 500);
+
+  readSerial();
+}
 //ttyACM0
+
