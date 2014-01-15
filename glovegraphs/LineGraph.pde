@@ -7,10 +7,8 @@ class LineGraph {
   // Private
   int[] values;
   int position = 0;  // What value in values we're currently on/last updated
-  color cFill = color(255);
-  color cStroke = color(0);
-  color cLine = color(255, 0, 0);
-  color cText = color(40, 40, 40);
+  Style style = new Style();
+
   boolean first = true;
   boolean dynamic = false;
 
@@ -36,9 +34,8 @@ class LineGraph {
 
   void display() {
     // Draw background
-    fill(cFill);
-    stroke(cStroke);
-    stroke(color(0));
+    fill(style.GRAPH_BACKGROUND);
+    stroke(style.GRAPH_BORDER);
     rect(x, y, w, h);
 
     // Draw graph line
@@ -47,12 +44,12 @@ class LineGraph {
 
     for (int i = 0; i < position-1; i++) {
       // Draw line from current value to next
-      stroke(cLine);
+      stroke(style.GRAPH_CONTENTS);
       line(x+i*xSize, y+h-(values[i]-min)*ySize, x+(i+1)*xSize, y+h-(values[i+1]-min)*ySize);
     }
 
     // Draw text
-    fill(0, 0, 0);
+    fill(style.TEXT);
     textSize(20);
     text(values[position == 0 ? 0:position-1], x+5, y+20);
   }

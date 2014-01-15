@@ -20,11 +20,14 @@ boolean calibrated = false;
 float[] sensorMinVal = new float[NUMBER_OF_SENSORS];
 float[] sensorMaxVal = new float[NUMBER_OF_SENSORS];
 
+Style style = new Style();
+
 // Add variables related to Serial here
 Serial serial;
 
 void setup() {
-  size(1000, 1000);
+  size(displayWidth, displayHeight);
+  println(style.TEXT);
   activeState = State.CALIBRATE;
   clearInputBuffer();
   graphC = newGraphC();
@@ -40,28 +43,31 @@ void setup() {
   pwm.y = 40;
 
   // Init serial
-  serial = new Serial(this, Serial.list()[0], 9600);
+  //serial = new Serial(this, Serial.list()[0], 9600);
 }
 
 void draw() {
-  background(color(255, 230, 200));  
-
+  style.backgroundGradient(0, 0, width, height);
+  /*
   switch(activeState) {
-  case CALIBRATE:
-    calibrate();
-    break;
-  case SET:
-    setPassword();
-    break;
-  case INPUT:
-    inputPassword();
-    break;
-  case VERIFY:
-    verifyPassword();
-    break;
-  default:
-    break;
-  }
+   case CALIBRATE:
+   calibrate();
+   break;
+   case SET:
+   setPassword();
+   break;
+   case INPUT:
+   inputPassword();
+   break;
+   case VERIFY:
+   verifyPassword();
+   break;
+   default:
+   break;
+   }
+   */
+
+  graphC.display();
 }
 /*
    void keyPressed() {

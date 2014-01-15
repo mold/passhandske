@@ -18,8 +18,7 @@ class GraphContainer {
   LineGraph[] lineGraphs;
   int steps = 700;
 
-  color cFill = color(255);
-  color cStroke = color(0);
+  Style style = new Style();
 
   GraphContainer(int x, int y, int min_val, int max_val, int numberOfSensors, int width) {
     w = width;
@@ -29,7 +28,6 @@ class GraphContainer {
     this.x = x;
     this.y = y;
     this.numberOfSensors = numberOfSensors;
-
     lineGraphW = Math.round((width-padding*2)*lineGraphWPercent);
     lineGraphH = Math.round((width-padding*2)*lineGraphHPercent);
     barGraphW = Math.round((width-padding*4)*barGraphWPercent);
@@ -47,9 +45,9 @@ class GraphContainer {
 
   void display() {
     // Draw background
-    fill(cFill);
-    stroke(cStroke);
-    rect(x, y, w, h);
+    fill(style.GRAPH_BACKGROUND);
+    stroke(style.GRAPH_BORDER);
+    //rect(x, y, w, h);
 
     // Draw line graphs
     for (int i = 0; i < numberOfSensors; i++) {

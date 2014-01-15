@@ -16,8 +16,7 @@ class ErrorContainer {
 
   ErrorGraph[] errorGraphs;
 
-  color cFill = color(255);
-  color cStroke = color(0);
+  Style style = new Style();
 
   float[][] password1;
   float[][] password2;
@@ -51,9 +50,9 @@ class ErrorContainer {
 
   void display() {
     // Draw background
-    fill(cFill);
-    stroke(cStroke);
-    rect(x, y, w, h);
+    fill(style.GRAPH_BACKGROUND);
+    stroke(style.GRAPH_BORDER);
+    //rect(x, y, w, h);
 
     // Draw line graphs
     for (int i = 0; i < numberOfSensors; i++) {
