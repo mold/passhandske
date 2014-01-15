@@ -19,7 +19,7 @@ int inputBufferIndex = 0;  // Index for saving data to buffer
 Serial serial;
 
 void setup() {
-  //size(1000, 1000);
+  size(1000, 1000);
   activeState = State.SET;
   clearInputBuffer();
   graphC = newGraphC();
@@ -117,6 +117,7 @@ void setPassword() {
   else {
     if (savingInput) {  // Done getting new password
       savingInput = false;
+      println("input buffer");
       printInputBuffer();
 
       pwm.savePassword(inputBuffer);
@@ -147,6 +148,8 @@ void inputPassword() {
       printInputBuffer();
       savingInput = false;
 
+      pwm.verifyPassword(inputBuffer);
+
       changeState(State.VERIFY);
     }
 
@@ -161,8 +164,6 @@ void inputPassword() {
  */
 void verifyPassword() {
   drawTitle("VERIFYING PASSWORD");
-
-  pwm.verifyPassword(inputBuffer);
   pwm.display();
 }
 
@@ -220,6 +221,7 @@ void readSerial() {
           // Save to newData and inputBuffer
           newData[i] = value;
           inputBuffer[i][inputBufferIndex] = value;
+          println(value);
         } 
 
         inputBufferIndex++;
@@ -234,4 +236,3 @@ void readSerial() {
   }
 }
 //ttyACM0
-
