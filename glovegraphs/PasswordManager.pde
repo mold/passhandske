@@ -189,15 +189,27 @@ class PasswordManager {
     
     error = averageError;
     
+    printPassword(savedPassword);
+    printPassword(inputPassword);
+    
     return averageError < ERROR_THRESHOLD;
+  }
+  
+  void printPassword (float[][] password) {
+    println("[");
+    for (int i = 0; i < password.length; i++) {
+      for (int j = 0; j < password[0].length; j++) {
+        print(password[i][j]+" ");
+      }
+      println();
+    }
+    println("]");
   }
 
   /**
    * Draws
    */
   void display() {
-    println(savedPassword[0]);
-    println(inputPassword[0]);
     ErrorContainer errorC = new ErrorContainer(
       10, // x position
       40, // y position
