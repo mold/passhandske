@@ -15,11 +15,16 @@ int dNoPins = sizeof(dPins)/sizeof(int);
 int bNoPins = sizeof(bPins)/sizeof(int);
 int SAMPLES_PER_SECOND = 20;
 
+int beepPin = 10;
 int buttonPin = 12;
+boolean beeping = 0;
+int counter = 0;
 
 void setup() {
   // initialize serial communications at 9600 bps:
   Serial.begin(9600); 
+  pinMode(beepPin, OUTPUT);
+  digitalWrite(beepPin, LOW);
   // set pin modes for digital pins
   for(int i = 0; i < dNoPins; i++){
     pinMode(dPins[i], INPUT); 
@@ -61,7 +66,20 @@ void loop() {
   // wait 
   // for the analog-to-digital converter to settle
   // after the last reading:
-  delay(1000/SAMPLES_PER_SECOND);                     
+  if (beeping && counter > 10)
+  {
+  digitalWrite(beepPin, HIGH);
+  beeping = 0;
+  counter = 0;
+}
+  else if (counter > 10)
+  {
+  digitalWrite(beepPin, LOW);
+  beeping = 1;
+  counter = 0;
+}
+counter++;
+  delay(1000/SAMPLES_PER_SECOND);                    
 }
 
 /**
