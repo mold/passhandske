@@ -7,15 +7,17 @@ class ErrorGraph {
   float error;
 
   // Private
-  float[] v1;
-  float[] v2;
-  color cFill = color(255);
-  color cStroke = color(0);
-  color cLine = color(255, 0, 0);
-  color cText = color(40, 40, 40);
-  color cError = color(255, 0, 0);
-  boolean first = true;
-  boolean dynamic = false;
+  private float[] v1;
+  private float[] v2;
+  private color cFill = color(255);
+  private color cStroke = color(0);
+  private color cLine = color(255, 0, 0);
+  private color cText = color(40, 40, 40);
+  private color cError1 = color(255, 0, 0);
+  private color cError2 = color(0, 0, 255);
+  private color cDifference = color(0, 255, 0);
+  private boolean first = true;
+  private boolean dynamic = false;
 
   ErrorGraph(int x, int y, float[] v1, float[] v2, float error) {
     w = 700;
@@ -40,12 +42,19 @@ class ErrorGraph {
     float y1;
 
     for (int i = 0; i < v1.length - 1; i++) {
-      // Draw line from current value to next
-      fill(cError);
-      y1 = y+h-(v1[i]-min)*ySize;
+      float graphX = x+i*xSize; 
       //rect(x+i*xSize, y1, xSize, (y+h-(v2[i]-min)*ySize)-y1);
-      line(x+i*xSize, y+h-(v1[i]-min)*ySize, x+(i+1)*xSize, y+h-(v1[i+1]-min)*ySize);
-      line(x+i*xSize, y+h-(v2[i]-min)*ySize, x+(i+1)*xSize, y+h-(v2[i+1]-min)*ySize);
+      
+      // Draw line between lines to highlight difference    
+      stroke(cDifference);
+      line(graphX, y+h-(v1[i]-min)*ySize, graphX, y+h-(v2[i]-min)*ySize);
+      
+      // Draw line from current value to next
+      y1 = y+h-(v1[i]-min)*ySize;
+      stroke(cError1);
+      line(graphX, y+h-(v1[i]-min)*ySize, graphX+xSize, y+h-(v1[i+1]-min)*ySize);
+      stroke(cError2);
+      line(graphX, y+h-(v2[i]-min)*ySize, graphX+xSize, y+h-(v2[i+1]-min)*ySize);
     }
 
     // Draw text
@@ -53,5 +62,5 @@ class ErrorGraph {
     textSize(20);
     text(error, x+5, y+20);
   }
-
 }
+

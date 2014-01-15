@@ -28,7 +28,7 @@ class ErrorContainer {
 
     this.x = x;
     this.y = y;
-    this.numberOfSensors = p1[0].length;
+    this.numberOfSensors = p1.length;
     
     password1 = p1;
     password2 = p2;

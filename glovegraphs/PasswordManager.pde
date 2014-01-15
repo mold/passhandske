@@ -1,7 +1,7 @@
 class PasswordManager {
 
-  final float NOISE_THRESHOLD = 0.3;
-  final float ERROR_THRESHOLD = 0.3;
+  final float NOISE_THRESHOLD = 0.02;
+  final float ERROR_THRESHOLD = 0.2;
 
   public int x = 0; 
   public int y = 0;
@@ -165,7 +165,9 @@ class PasswordManager {
    * save password
    */
   void savePassword(int[][] sensorData) {
+    println(sensorData);
     savedPassword = trimPassword(sensorData);
+    println(savedPassword);
   }
 
   /**
@@ -196,8 +198,8 @@ class PasswordManager {
    * Draws
    */
   void display() {
-    println(savedPassword[0]);
-    println(inputPassword[0]);
+    /*println(savedPassword[0]);
+    println(inputPassword[0]);*/
     ErrorContainer errorC = new ErrorContainer(
       10, // x position
       40, // y position
