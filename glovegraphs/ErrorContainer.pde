@@ -18,7 +18,7 @@ class ErrorContainer {
 
   color cFill = color(255);
   color cStroke = color(0);
-  
+
   float[][] password1;
   float[][] password2;
   float[] errors;
@@ -29,7 +29,7 @@ class ErrorContainer {
     this.x = x;
     this.y = y;
     this.numberOfSensors = p1.length;
-    
+
     password1 = p1;
     password2 = p2;
     this.errors = errors;
@@ -38,6 +38,10 @@ class ErrorContainer {
     lineGraphH = 200;
 
     h = (int)Math.ceil(padding*2+numberOfSensors*lineGraphH+(numberOfSensors-1)*padding);
+
+    if (p1.length != p2.length || p1[0].length != p2[0].length)
+      println("error container AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"); 
+
 
     errorGraphs = new ErrorGraph[numberOfSensors];
     for (int i = 0; i < numberOfSensors; i++) {
@@ -56,5 +60,5 @@ class ErrorContainer {
       errorGraphs[i].display();
     }
   }
-  
 }  
+

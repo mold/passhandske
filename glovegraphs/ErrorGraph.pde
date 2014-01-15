@@ -27,6 +27,9 @@ class ErrorGraph {
     this.v1 = v1;
     this.v2 = v2;
     this.error = error;
+
+    if (v1.length != v2.length)
+      println("error graph AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
   }
 
   void display() {
@@ -44,11 +47,11 @@ class ErrorGraph {
     for (int i = 0; i < v1.length - 1; i++) {
       float graphX = x+i*xSize; 
       //rect(x+i*xSize, y1, xSize, (y+h-(v2[i]-min)*ySize)-y1);
-      
+
       // Draw line between lines to highlight difference    
       stroke(cDifference);
       line(graphX, y+h-(v1[i]-min)*ySize, graphX, y+h-(v2[i]-min)*ySize);
-      
+
       // Draw line from current value to next
       y1 = y+h-(v1[i]-min)*ySize;
       stroke(cError1);

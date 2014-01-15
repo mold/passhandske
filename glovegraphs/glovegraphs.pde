@@ -182,6 +182,11 @@ void inputPassword() {
  */
 void verifyPassword() {
   drawTitle("VERIFYING PASSWORD");
+
+  if (pwm.correct)
+    background(color(0, 255, 0)); 
+  else background(color(255, 0, 0));
+
   pwm.display();
 }
 
@@ -203,13 +208,11 @@ void clearInputBuffer() {
  * trims AND NORMALIZES the buffer
  */
 float[][] getTrimmedBuffer() {
-  float[][] trimmed = new int[NUMBER_OF_SENSORS][];
+  float[][] trimmed = new float[NUMBER_OF_SENSORS][inputBufferIndex];
 
   for (int i = 0; i < NUMBER_OF_SENSORS; i++) {
-    trimmed[i] = Arrays.copyOf(inputBuffer[i], inputBufferIndex);
-    if (!calibrated)continue;
-    for (int j = 0; j < trimmed[i].length; j++) {
-      trimmed[i][j] = (trimmed[i][j]-sensorMinVal[i])/(sensorMaxVal[i]-sensorMinVal[i]);
+    for (int j = 0; j < inputBufferIndex; j++) {
+      trimmed[i][j] = (inputBuffer[i][j]-sensorMinVal[i])/(sensorMaxVal[i]-sensorMinVal[i]);
     }
   }
 
@@ -253,7 +256,7 @@ void readSerial() {
           // Convert two bytes to one float
           int value = twoBytesToInt(bytes[i*2+1], bytes[i*2]);
 
-          println(value);
+          //println(value);
           if (!calibrated) {
             sensorMinVal[i] = value < sensorMinVal[i] ? value : sensorMinVal[i];
             sensorMaxVal[i] = value > sensorMaxVal[i] ? value : sensorMaxVal[i];
