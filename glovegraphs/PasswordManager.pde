@@ -10,6 +10,9 @@ class PasswordManager {
   
   public float[][] savedPassword;
   public float[][] inputPassword;
+  
+  public float[] errors;
+  public float error;
 
   PasswordManager () {
     
@@ -170,20 +173,22 @@ class PasswordManager {
    */
   boolean verifyPassword(int[][] sensorData) {
     float[] v;
-    float[] error = new float[savedPassword.length];
+    errors = new float[savedPassword.length];
     float averageError = 0;
     
     inputPassword = trimPassword(sensorData);
     
-    for (int i = 0; i < error.length; i++) {
+    for (int i = 0; i < errors.length; i++) {
       v = resizeVector(inputPassword[i], savedPassword[i].length);
-      error[i] = compareVectors(savedPassword[i], v);
-      averageError += error[i];
+      errors[i] = compareVectors(savedPassword[i], v);
+      averageError += errors[i];
     }
-    averageError /= error.length;
+    averageError /= errors.length;
     
     println("Error: "+averageError);
-    println(error);
+    println(errors);
+    
+    error = averageError;
     
     return averageError < ERROR_THRESHOLD;
   }
@@ -192,6 +197,15 @@ class PasswordManager {
    * Draws
    */
   void display() {
+    ErrorContainer errorC = new ErrorContainer(
+      10, // x position
+      40, // y position
+      700, // width of graph container (pixels)
+      savedPassword, // saved password
+      inputPassword, // input password
+      errors // errors for each sensor
+    );
+    errorC.display();
   }
 }
 
