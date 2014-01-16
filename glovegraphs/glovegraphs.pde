@@ -1,6 +1,6 @@
 import processing.serial.*;
 import java.util.*;
-
+import guru.ttslib.*;
 State activeState;
 
 int NUMBER_OF_SENSORS = 6; // last sensor is always assumed to be the only digital
@@ -13,7 +13,7 @@ int KEY_ACTIVATE = 32;
 boolean userInput = false;
 boolean savingInput = true;
 
-int SAMPLES_PER_SECOND = 20;
+int SAMPLES_PER_SECOND = 40;
 int[][] inputBuffer;
 int inputBufferIndex = 0;  // Index for saving data to buffer
 
@@ -22,7 +22,8 @@ float[] sensorMinVal = new float[NUMBER_OF_SENSORS];
 float[] sensorMaxVal = new float[NUMBER_OF_SENSORS];
 
 Style style = new Style();
-
+TTS tts; 
+int voiceFrequency = 100;
 Beeper beep = new Beeper();
 
 // Add variables related to Serial here
@@ -34,19 +35,27 @@ void setup() {
   activeState = State.CALIBRATE;
   clearInputBuffer();
   graphC = newGraphC();
+  resetCalib();
 
-  for (int i = 0; i < NUMBER_OF_SENSORS; i++) {
-    sensorMinVal[i] = 1000;
-    sensorMaxVal[i] = 0;
-  }
-
+  tts = new TTS(); 
+  tts.setPitch(voiceFrequency);
   // Set up passwordmanager
-  pwm = new PasswordManager();
+  pwm = new PasswordManager(SAMPLES_PER_SECOND);
   pwm.x = 10;
   pwm.y = 40;
 
   // Init serial
   serial = new Serial(this, Serial.list()[0], 9600);
+}
+
+void resetCalib() {
+  for (int i = 0; i < NUMBER_OF_SENSORS; i++) {
+    sensorMinVal[i] = 1000;
+    sensorMaxVal[i] = 0;
+  }
+
+  sensorMinVal[5] =0;
+  sensorMaxVal[5] =3;
 }
 
 void draw() {
@@ -84,11 +93,15 @@ void changeState(State s) {
   graphC = newGraphC();
   userInput = false;
   savingInput = false;
+  serial.clear();
   println("Active state: "+activeState);
 }
 
 void keyTyped() {
   switch(key) {   // Change state maybe?
+  case '0':
+    changeState(State.CALIBRATE);
+    break;
   case '1':
     changeState(State.SET);
     break;
@@ -110,6 +123,10 @@ void keyTyped() {
       beep.unmute();
     else
       beep.mute();
+    break;
+  case 'r':
+    resetCalib();
+    break;
   default:
     break;
   }
@@ -195,9 +212,9 @@ void inputPassword() {
 void verifyPassword() {
   drawTitle("VERIFYING PASSWORD");
 
-  if (pwm.correct)
-    background(color(0, 255, 0)); 
-  else background(color(255, 0, 0));
+  style.backgroundGradient(0, 0, width, height, pwm.correct);
+
+
 
   pwm.display();
 }
@@ -225,6 +242,12 @@ float[][] getTrimmedBuffer() {
   for (int i = 0; i < NUMBER_OF_SENSORS; i++) {
     for (int j = 0; j < inputBufferIndex; j++) {
       trimmed[i][j] = (inputBuffer[i][j]-sensorMinVal[i])/(sensorMaxVal[i]-sensorMinVal[i]);
+      if (trimmed[i][j] < 0) {
+        trimmed[i][j] =0;
+      }
+      if (trimmed[i][j] > 1) {
+        trimmed[i][j] = 1;
+      }
     }
   }
 
@@ -240,7 +263,7 @@ GraphContainer newGraphC() {
   300, // minimum value of input data
   400, // maximum value of input data
   NUMBER_OF_SENSORS, // number of sensors (length of input array)
-  700);// width of graph container (pixels)
+  1000);// width of graph container (pixels)
   x.setDynamicInterval(true);
   return x;
 }
@@ -286,7 +309,7 @@ void readSerial() {
     }
     catch(Exception e) {
       println(e);
-      println(bytes);
+      //println(bytes);
     }
   }
 }
@@ -296,7 +319,7 @@ void readSerial() {
  */
 void calibrate() {
   drawTitle("CALIBRATION");
-
+  savingInput=true;
   String s = "Calibrate the gloves by first clenching your fist (with the thumb "+
     "inside your fingers), then opening your hand as far as possible."+
     "\n\nWhen you've done this, press 'c' to save your min/max values and then '1' to begin.\n\n";
@@ -308,18 +331,19 @@ void calibrate() {
   s+="\nMax values: ";
   for (int i = 0; i < NUMBER_OF_SENSORS; i++) {
     s+=sensorMaxVal[i]+" ";
-  }
-
+  }  
   if (calibrated) {
-    fill(color(255, 0, 0));
+    fill(style.TEXT_RED);
   }
   else {
-    fill(color(style.TEXT));
+    fill(style.TEXT);
   }
 
   text(s, 10, 80, 500, 500);
 
   readSerial();
+  
+
 }
 //ttyACM0
 

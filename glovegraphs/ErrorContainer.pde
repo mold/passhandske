@@ -59,6 +59,24 @@ class ErrorContainer {
     for (int i = 0; i < numberOfSensors; i++) {
       errorGraphs[i].display();
     }
+
+    // draw legend for mr Johnny boy shitface
+    stroke(style.GRAPH_CONTENTS);
+    fill(style.GRAPH_CONTENTS);
+    rect(x+lineGraphW+30, y+40, 40, 40);
+    text("PASSWORD", x+lineGraphW+30+40, y+40);
+
+    // draw legend for mr Johnny boy shitface
+    stroke(style.GRAPH_INPUT);
+    fill(style.GRAPH_INPUT);
+    rect(x+lineGraphW+30, y+110, 40, 40);
+    text("PASSWORD ATTEMPT", x+lineGraphW+30+40, y+110);
+
+    // draw legend for mr Johnny boy shitface
+    stroke(style.GRAPH_ERROR);
+    fill(style.GRAPH_ERROR);
+    rect(x+lineGraphW+30, y+180, 40, 40);
+    text("ERROR", x+lineGraphW+30+40, y+180);
   }
 }  
 

@@ -1,8 +1,12 @@
 class PasswordManager {
 
-  final float NOISE_THRESHOLD = 0.01;
-  final float ERROR_THRESHOLD = 0.1;
-  final float ERROR_THRESHOLD_TILT = 0.2;
+  final float NOISE_THRESHOLD = 0.008;
+  final float ERROR_THRESHOLD = 0.2;
+  final float ERROR_THRESHOLD_TILT = 0.3;
+  
+  final float NOISE_TIME_CUT = 50;
+  
+  int endSpacing;
 
   public int x = 0; 
   public int y = 0;
@@ -17,7 +21,8 @@ class PasswordManager {
 
   public boolean correct = false;
 
-  PasswordManager () {
+  PasswordManager (int samplesPerSecond) {
+    endSpacing = (int) Math.ceil(samplesPerSecond * NOISE_TIME_CUT / 1000);
   }
 
   float[] normalizeVector (int[] vector) {
@@ -61,7 +66,10 @@ class PasswordManager {
     while (left < right &&
       abs(vector[right-1] - vector[right]) < NOISE_THRESHOLD)
       right--;
-
+    right += endSpacing;
+    if (right > vector.length-1)right=vector.length-1;
+    left -= endSpacing;
+    if (left < 0)left=0;
     return new int[] {
       left, right
     };
@@ -138,7 +146,7 @@ class PasswordManager {
         else {
           newVector[i] = vector[i];
         }
-        prevIndex = newIndex + 1;
+        prevIndex = newIndex;
       }
     } 
     else {
@@ -182,12 +190,13 @@ class PasswordManager {
     for (int i = 0; i < errors.length; i++) {
       inputPassword[i] = resizeVector(inputPassword[i], savedPassword[i].length);
       errors[i] = compareVectors(savedPassword[i], inputPassword[i]);
-      averageError += errors[i];
+      if (i < errors.length-1)
+        averageError += errors[i];
     }
-    averageError /= errors.length;
+    averageError /= errors.length-1;
 
-    println("Error: "+averageError);
-    println(errors);
+    println(savedPassword[5]);
+    println(inputPassword[5]);
 
     if (inputPassword.length != savedPassword.length) {
       println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
@@ -195,17 +204,28 @@ class PasswordManager {
 
     error = averageError;
 
+    println("Average error below: "+(averageError < ERROR_THRESHOLD)+" "+averageError);
+    int lastFaultySensor = -1;
     correct=true;
     for (int i = 0; i < errors.length-1; i++) {
       // check errors for all except tilt
-      if (errors[i] > ERROR_THRESHOLD)
-        correct=false;
+      if (errors[i] > ERROR_THRESHOLD) {
+        correct=false; 
+        lastFaultySensor = i;
+      }
     }
     // special pleading for tilt sensor
     if (errors[errors.length-1] > ERROR_THRESHOLD_TILT)
+    { 
       correct = false;
+      lastFaultySensor = errors.length-1;
+    }
+
+    println("Individual errors below: "+correct+" "+lastFaultySensor);
 
     //correct = averageError < ERROR_THRESHOLD;
+
+    correct = averageError < ERROR_THRESHOLD && errors[errors.length-1] < ERROR_THRESHOLD_TILT;
 
     return correct;
   }

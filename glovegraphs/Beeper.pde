@@ -46,6 +46,7 @@ class Beeper {
     prevTime = millis();
     playSound = false;
     mute = true;
+    out.mute();
   }
 
   void update()
@@ -56,7 +57,6 @@ class Beeper {
         if (time - prevTime > beepTime) {
           out.mute();
           playSound = false;
-          println("stop sound");
         }
       } 
       else {
@@ -64,7 +64,6 @@ class Beeper {
           out.unmute();
           playSound = true;
           prevTime = time;
-          println("play sound");
         }
       }
     }
@@ -77,6 +76,5 @@ class Beeper {
   void unmute() {
     mute = false;
   }
-  
 }
 

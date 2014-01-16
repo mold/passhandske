@@ -7,7 +7,7 @@ class GraphContainer {
 
   // Private
   float lineGraphWPercent = 0.7;
-  float lineGraphHPercent = 0.16;
+  float lineGraphHPercent = 0.10;
   float barGraphWPercent = 0.3;
   float barGraphHPercent = lineGraphHPercent;
   float tiltGraphWPercent = barGraphWPercent;
