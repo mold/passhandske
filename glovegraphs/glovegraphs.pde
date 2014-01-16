@@ -105,6 +105,11 @@ void keyTyped() {
     if (activeState == State.CALIBRATE)
       calibrated = !calibrated;
     break; 
+  case 'm': //mute
+    if (beep.mute)
+      beep.unmute();
+    else
+      beep.mute();
   default:
     break;
   }
