@@ -43,14 +43,14 @@ class ErrorGraph {
 
       // Draw line between lines to highlight difference    
       stroke(style.GRAPH_ERROR);
-      line(graphX, y+h-(v1[i]-min)*ySize, graphX, y+h-(v2[i]-min)*ySize);
+      style.styleLine(graphX, y+h-(v1[i]-min)*ySize, graphX, y+h-(v2[i]-min)*ySize);
 
       // Draw line from current value to next
       y1 = y+h-(v1[i]-min)*ySize;
       stroke(style.GRAPH_CONTENTS);
-      line(graphX, y+h-(v1[i]-min)*ySize, graphX+xSize, y+h-(v1[i+1]-min)*ySize);
+      style.styleLine(graphX, y+h-(v1[i]-min)*ySize, graphX+xSize, y+h-(v1[i+1]-min)*ySize);
       stroke(style.GRAPH_INPUT);
-      line(graphX, y+h-(v2[i]-min)*ySize, graphX+xSize, y+h-(v2[i+1]-min)*ySize);
+      style.styleLine(graphX, y+h-(v2[i]-min)*ySize, graphX+xSize, y+h-(v2[i+1]-min)*ySize);
     }
 
     // Draw text

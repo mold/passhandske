@@ -19,6 +19,8 @@ class GraphContainer {
   LineGraph[] lineGraphs;
   TiltGraph tiltGraph;
   int steps = 700;
+  
+  String[] labels = new String[0];
 
   Style style = new Style();
 
@@ -86,6 +88,13 @@ class GraphContainer {
       lineGraphs[i].setDynamic(set);
     }
     barGraph.setDynamic(set);
+  }
+  
+  /**
+  * Set labels
+  */
+  public void setLabels(String [] lab){
+    this.labels = lab;
   }
 }  
 

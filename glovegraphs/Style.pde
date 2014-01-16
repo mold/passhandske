@@ -11,7 +11,7 @@ class Style {
 
   public final color GRAPH_ERROR = color(255, 0, 0);
   public final color GRAPH_INPUT = color(100, 100, 255); // mmmagenta
-  
+
   public final int STROKE_WEIGHT = 2;
 
   public void backgroundGradient(int x, int y, int w, int h) {
@@ -26,10 +26,14 @@ class Style {
       line(x, i, x+w, i);
     }
   }
+
+  public void styleLine(float x1, float y1, float x2, float y2) {
+    strokeWeight(STROKE_WEIGHT);
+    line(x1, y1, x2, y2);
+    strokeWeight(1);
+  }
   
-  public void line(float x1, float y1,float x2, float y2){
-     strokeWeight(STROKE_WEIGHT);
-     line(x1,y1,x2,y2);
+  public Style() {
   }
 }
 

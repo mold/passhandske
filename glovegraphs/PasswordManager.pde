@@ -2,6 +2,7 @@ class PasswordManager {
 
   final float NOISE_THRESHOLD = 0.01;
   final float ERROR_THRESHOLD = 0.1;
+  final float ERROR_THRESHOLD_TILT = 0.2;
 
   public int x = 0; 
   public int y = 0;
@@ -195,10 +196,14 @@ class PasswordManager {
     error = averageError;
 
     correct=true;
-    for (float err: errors) {
-      if (err > ERROR_THRESHOLD)
+    for (int i = 0; i < errors.length-1; i++) {
+      // check errors for all except tilt
+      if (errrors[i] > ERROR_THRESHOLD)
         correct=false;
     }
+    // special pleading for tilt sensor
+    if (errors[errors.length-1] > ERROR_THRESHOLD_TILT)
+      correct = false;
 
     //correct = averageError < ERROR_THRESHOLD;
 

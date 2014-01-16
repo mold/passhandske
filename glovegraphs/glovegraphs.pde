@@ -306,7 +306,7 @@ void calibrate() {
     fill(color(255, 0, 0));
   }
   else {
-    fill(color(0, 0, 0));
+    fill(color(style.TEXT));
   }
 
   text(s, 10, 80, 500, 500);
