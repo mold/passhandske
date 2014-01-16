@@ -1,6 +1,6 @@
 class PasswordManager {
 
-  final float NOISE_THRESHOLD = 0.008;
+  final float NOISE_THRESHOLD = 0.02;
   final float ERROR_THRESHOLD = 0.2;
   final float ERROR_THRESHOLD_TILT = 0.3;
   
@@ -85,8 +85,8 @@ class PasswordManager {
     int right = 0;
 
     // find the limits where the password starts and ends
-    for (int i = 0; i < password.length; i++) {
-      limits = getNoiseLimits(password[0]);
+    for (int i = 0; i < password.length - 1; i++) {
+      limits = getNoiseLimits(password[i]);
       if (limits[0] < left)
         left = limits[0];
       if (limits[1] > right)
@@ -259,4 +259,3 @@ class PasswordManager {
     errorC.display();
   }
 }
-
