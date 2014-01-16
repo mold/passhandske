@@ -34,7 +34,7 @@ class ErrorContainer {
     this.errors = errors;
 
     lineGraphW = 700;
-    lineGraphH = 200;
+    lineGraphH = 100;
 
     h = (int)Math.ceil(padding*2+numberOfSensors*lineGraphH+(numberOfSensors-1)*padding);
 
@@ -45,6 +45,7 @@ class ErrorContainer {
     errorGraphs = new ErrorGraph[numberOfSensors];
     for (int i = 0; i < numberOfSensors; i++) {
       errorGraphs[i] = new ErrorGraph(x+padding, y+padding+i*(lineGraphH+padding), password1[i], password2[i], errors[i]);
+      errorGraphs[i].h = lineGraphH;
     }
   }
 

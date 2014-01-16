@@ -3,7 +3,8 @@ import java.util.*;
 
 State activeState;
 
-int NUMBER_OF_SENSORS = 5;
+int NUMBER_OF_SENSORS = 6; // last sensor is always assumed to be the only digital
+// bad I know, but hey
 int BYTES_PER_SENSOR = 2;
 GraphContainer graphC;
 PasswordManager pwm;
@@ -43,31 +44,28 @@ void setup() {
   pwm.y = 40;
 
   // Init serial
-  //serial = new Serial(this, Serial.list()[0], 9600);
+  serial = new Serial(this, Serial.list()[0], 9600);
 }
 
 void draw() {
   style.backgroundGradient(0, 0, width, height);
-  /*
-  switch(activeState) {
-   case CALIBRATE:
-   calibrate();
-   break;
-   case SET:
-   setPassword();
-   break;
-   case INPUT:
-   inputPassword();
-   break;
-   case VERIFY:
-   verifyPassword();
-   break;
-   default:
-   break;
-   }
-   */
 
-  graphC.display();
+  switch(activeState) {
+  case CALIBRATE:
+    calibrate();
+    break;
+  case SET:
+    setPassword();
+    break;
+  case INPUT:
+    inputPassword();
+    break;
+  case VERIFY:
+    verifyPassword();
+    break;
+  default:
+    break;
+  }
 }
 /*
    void keyPressed() {
@@ -200,7 +198,7 @@ void verifyPassword() {
  * Draw text at the top of the window (preferably state and/or instructions)
  */
 void drawTitle(String text) {
-  fill(0, 0, 0);
+  fill(style.TEXT);
   textSize(20);
   text(text, 10, 30);
 }

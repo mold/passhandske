@@ -28,6 +28,7 @@ void setup() {
   // set pin modes for digital pins
   for(int i = 0; i < dNoPins; i++){
     pinMode(dPins[i], INPUT); 
+    digitalWrite(dPins[i], LOW); 
   }
   for(int i = 0; i < bNoPins; i++){
     pinMode(bPins[i], INPUT); 
@@ -53,32 +54,32 @@ void loop() {
   //    Serial.write(10);
   //  }
 
+  // send analogue values
   for(int i = 0; i < bNoPins; i++){
     int value = analogRead(bPins[i]);
     //int value = map(analogRead(bPins[i]), 0, 1023, 0, 1000);
-    //Serial.print(value);
     sendInt16AsBytes(value);
-  //Serial.println(value);
   }
- // Serial.println();
+
+  // send digital values 
+  int val1 = digitalRead(dPins[0]);
+  int val2 = digitalRead(dPins[1]); 
+  int composite = (val1 << 1) | val2;
+  sendInt16AsBytes(composite);
+
   // End transmission with a linebreak (sortof)
   Serial.write(10);
   // wait 
   // for the analog-to-digital converter to settle
   // after the last reading:
-  if (beeping && counter > 10)
+    if (counter == SAMPLES_PER_SECOND-1 )
   {
-  digitalWrite(beepPin, HIGH);
-  beeping = 0;
+  tone(beepPin, 262, 1000/SAMPLES_PER_SECOND);
   counter = 0;
-}
-  else if (counter > 10)
-  {
-  digitalWrite(beepPin, LOW);
-  beeping = 1;
-  counter = 0;
-}
-counter++;
+  }
+  else
+  noTone(beepPin);
+  counter++;
   delay(1000/SAMPLES_PER_SECOND);                    
 }
 
@@ -89,6 +90,9 @@ void sendInt16AsBytes(int data){
   Serial.write(highByte(data));
   Serial.write(lowByte(data));
 }
+
+
+
 
 
 

@@ -54,7 +54,7 @@ class ErrorGraph {
     }
 
     // Draw text
-    fill(graph.TEXT);
+    fill(style.TEXT);
     textSize(20);
     text(error, x+5, y+20);
   }

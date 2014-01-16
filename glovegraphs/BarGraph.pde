@@ -21,8 +21,8 @@ class BarGraph {
     max = max_val; 
     w = width; 
     h = height;
-    this.numberOfBars = numberOfBars;
-    barValues = new int[numberOfBars];
+    this.numberOfBars = numberOfBars-1;
+    barValues = new int[this.numberOfBars];
   }
   BarGraph(int x, int y, int min_val, int max_val, int numberOfBars) {
     this.x = x; 
@@ -31,8 +31,8 @@ class BarGraph {
     max = max_val; 
     w = 300; 
     h = 200;
-    this.numberOfBars = numberOfBars;
-    barValues = new int[numberOfBars];
+    this.numberOfBars = numberOfBars-1;
+    barValues = new int[this.numberOfBars];
   }
 
   void display() {

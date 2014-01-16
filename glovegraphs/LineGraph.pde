@@ -45,7 +45,7 @@ class LineGraph {
     for (int i = 0; i < position-1; i++) {
       // Draw line from current value to next
       stroke(style.GRAPH_CONTENTS);
-      line(x+i*xSize, y+h-(values[i]-min)*ySize, x+(i+1)*xSize, y+h-(values[i+1]-min)*ySize);
+      style.line(x+i*xSize, y+h-(values[i]-min)*ySize, x+(i+1)*xSize, y+h-(values[i+1]-min)*ySize);
     }
 
     // Draw text
