@@ -5,8 +5,9 @@ Gesture based passwords using a sensor glove (for DT2140@KTH)
 
 ___
 
-Instructions
+~~Instructions~~
 ---
+these instructions are old, there's calibration now
 
 _How to run_
 * Download the Arduino sketch to your board
