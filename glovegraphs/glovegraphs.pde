@@ -23,6 +23,8 @@ float[] sensorMaxVal = new float[NUMBER_OF_SENSORS];
 
 Style style = new Style();
 
+Beeper beep = new Beeper();
+
 // Add variables related to Serial here
 Serial serial;
 
@@ -48,6 +50,7 @@ void setup() {
 }
 
 void draw() {
+  beep.update();
   style.backgroundGradient(0, 0, width, height);
 
   switch(activeState) {

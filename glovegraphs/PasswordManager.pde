@@ -198,7 +198,7 @@ class PasswordManager {
     correct=true;
     for (int i = 0; i < errors.length-1; i++) {
       // check errors for all except tilt
-      if (errrors[i] > ERROR_THRESHOLD)
+      if (errors[i] > ERROR_THRESHOLD)
         correct=false;
     }
     // special pleading for tilt sensor
